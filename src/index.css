@@ -1,0 +1,225 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: 'Syne', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --color-electric: #C6FF00;
+  --color-dark: #080808;
+  --color-surface: #121212;
+  --color-surface-hover: #1c1c1c;
+  --color-muted: #888888;
+  --color-light: #F5F5F0;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    background-color: #080808;
+    color: #F5F5F0;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #080808;
+    color: #F5F5F0;
+    overflow-x: hidden;
+  }
+}
+
+/* Subtle Film Grain Texture Overlay */
+.bg-noise {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* Fine Grid Pattern */
+.bg-fine-grid {
+  background-size: 48px 48px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #080808;
+}
+::-webkit-scrollbar-thumb {
+  background: #222222;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #C6FF00;
+}
+
+/* Hide default cursor on desktop when custom cursor is active */
+@media (pointer: fine) {
+  .custom-cursor-active,
+  .custom-cursor-active * {
+    cursor: none !important;
+  }
+}
+
+/* Clamp utilities */
+.text-hero-giant {
+  font-size: clamp(3.2rem, 11vw, 11.5rem);
+  line-height: 0.88;
+  letter-spacing: -0.04em;
+}
+
+.text-editorial-giant {
+  font-size: clamp(2.4rem, 6.5vw, 6.8rem);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+
+/* A travelling highlight stays confined to the portrait's frame. */
+@property --portrait-frame-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.portrait-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--portrait-frame-angle),
+    transparent 0deg,
+    rgb(198 255 0 / 15%) 35deg,
+    #c6ff00 65deg,
+    #f5f5f0 75deg,
+    transparent 100deg,
+    transparent 180deg,
+    rgb(217 154 0 / 20%) 215deg,
+    #d99a00 245deg,
+    #c6ff00 255deg,
+    transparent 280deg,
+    transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: portrait-frame-orbit 8s linear infinite;
+}
+
+@keyframes portrait-frame-orbit {
+  to { --portrait-frame-angle: 360deg; }
+}
+
+/* Cards stand upright around a horizontal ring, with real perspective. */
+.project-carousel {
+  --carousel-radius: 185px;
+  --carousel-card-width: 210px;
+  height: 550px;
+}
+
+.project-carousel-scene {
+  position: absolute;
+  inset: 0 0 48px;
+  perspective: 1200px;
+  perspective-origin: 50% 38%;
+}
+
+.project-carousel-rotor {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.project-carousel-slot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--carousel-card-width);
+  transform-style: preserve-3d;
+}
+
+.project-carousel-front,
+.project-carousel-back {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.project-carousel-back {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(180deg);
+  pointer-events: none;
+}
+
+.project-carousel-floor {
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  top: 63%;
+  height: 22%;
+  border: 1px solid rgb(198 255 0 / 12%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgb(198 255 0 / 5%), transparent 70%);
+}
+
+@media (min-width: 640px) {
+  .project-carousel {
+    --carousel-radius: 290px;
+    --carousel-card-width: 280px;
+    height: 660px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .project-carousel {
+    --carousel-radius: 390px;
+    --carousel-card-width: 320px;
+    height: 740px;
+  }
+  .project-carousel-scene { perspective: 1600px; }
+}
+
+/* Sequential falling panels with a soft horizontal settling motion. */
+.scroll-reveal {
+  opacity: 0;
+  transform: perspective(1100px) translate3d(var(--reveal-offset, 72px), -105px, 0) rotateX(9deg) scale(0.97);
+  transform-origin: center top;
+  filter: blur(3px);
+  transition:
+    opacity 1100ms cubic-bezier(0.2, 0.75, 0.25, 1),
+    transform 1450ms cubic-bezier(0.2, 0.75, 0.25, 1),
+    filter 1100ms cubic-bezier(0.2, 0.75, 0.25, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform, filter;
+}
+
+.scroll-reveal.is-visible {
+  opacity: 1;
+  transform: perspective(1100px) translate3d(0, 0, 0) rotateX(0) scale(1);
+  filter: blur(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portrait-frame::before {
+    animation: none;
+  }
+
+  .scroll-reveal,
+  .scroll-reveal.is-visible {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+    will-change: auto;
+  }
+
+}
